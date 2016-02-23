@@ -1,13 +1,17 @@
 <?php
 require __DIR__ . '/vendor/autoload.php';
- 
-$response = \Httpful\Request::get('http://api.vistoapp.com/catalog?size=100&filter=search&filter_value=')
+
+$data =  array('visto_id'=> $_POST["visto_id"]);
+
+$response = \Httpful\Request::post('http://api.vistoapp.com/requests')
     ->expectsJson()
     ->addHeaders(array(
         'X-User-Token' => '[your token here]',
         'X-User-Email' => '[your api user here]',
     ))
+    ->body(http_build_query($data))
     ->send();
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -29,21 +33,9 @@ $response = \Httpful\Request::get('http://api.vistoapp.com/catalog?size=100&filt
     <div class="container wrapper-md">
 
       <!-- Main component for a primary marketing message or call to action -->
-      <div id="target" class="list-group">
-      <?php foreach ($response->body->vistos as $test): ?>
-          <a href="#" class="list-group-item">
-            <form action="ask.php" method="post">
-              <input type="hidden" name="visto_id" value="<?= $test->id ?>">
-              <h4 class="list-group-item-heading"><?= $test->title ?></h4>
-              <p class="list-group-item-text">
-                <?php foreach ($test->categories as $cat): ?>
-                  <span class="label label-default" style="background-color: <?= $cat-> color ?>;"><?= $cat->name ?></span>
-                <?php endforeach; ?>
-              </p>
-              <input type="submit" value="Submit">
-            </form>
-          </a>
-      <?php endforeach; ?>
+      <div id="target" class="text-center">
+        <h2><?= $response->body->title ?></h2>
+        <h3>due date:&nbsp;<?= $response->body->due_date ?></h3>
       </div>
 
     </div> <!-- /container -->
